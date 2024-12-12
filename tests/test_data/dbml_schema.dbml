@@ -1,0 +1,48 @@
+Table test_table_one {
+  id int [pk, increment, unique]
+
+  test_string_property varchar(200)
+  test_boolean_property boolean 
+  test_null_property text [null]
+
+  test_relation_single int [ref: - test_table_two.id]
+  test_relation_array int [ref: < test_table_three.id]
+  test_relation_many_id int [ref: <> test_table_four.id]
+  created datetime
+}
+
+Table test_table_two {
+  id int [pk, increment, unique]
+
+  foo varchar(200)
+  bar int [null]
+
+  test_singularization_businesses int [ref: - test_table_three.id]
+  test_singularization_companies int [ref: - test_table_three.id]
+  test_singularization_offices int [ref: - test_table_four.id]
+  test_singularization_cars int [ref: - test_table_one.id]
+
+  created datetime
+}
+
+Table test_table_three {
+  id int [pk, increment, unique]
+
+  foo boolean
+  bar date
+
+  test_table_three_type enum("foo", "bar")
+
+  created datetime
+}
+
+Table test_table_four {
+  id int [pk, increment, unique]
+
+  foo int
+  bar boolean [null]
+
+  testTableOne int [ref: <> test_table_one.id]
+
+  created datetime
+}

@@ -1,0 +1,8 @@
+node_modules/
+
+# local development stuff
+generated/**.*
+schemas/**/**.*
+coverage/**
+
+.DS_Store
