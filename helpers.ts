@@ -1,3 +1,4 @@
+import { singular } from "pluralize";
 import { LineColumns, RelationInformation } from "./types";
 
 
@@ -38,7 +39,7 @@ export function sanitizePropertyName(propertyName: string): string {
   if (propertyName.endsWith("_id"))
     propertyName = propertyName.replace("_id", "");
 
-  return snakeCaseToCamelCase(singularize(propertyName));
+  return snakeCaseToCamelCase(singular(propertyName));
 }
 
 /**
@@ -71,17 +72,5 @@ export function snakeCaseToPascalCase(string: string): string {
     .replace(/^[a-z]/, char => char.toUpperCase());
 
   return pascalCase;
-}
-
-export function singularize(word: string): string {
-  if (word.endsWith("ies")) {
-    return word.slice(0, -3) + "y";
-  } else if (word.endsWith("es") && !word.endsWith("ces")) {
-    return word.slice(0, -2);
-  } else if (word.endsWith("s") && word.length > 1) {
-    return word.slice(0, -1);
-  }
-
-  return word;
 }
 //  end helpers

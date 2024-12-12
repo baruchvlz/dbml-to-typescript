@@ -1,7 +1,8 @@
 import { createReadStream } from "fs";
 import { render } from "mustache";
 import { createInterface as readlineCrate } from "readline";
-import { getLineColumns, getRelationInformation, getTableName, isComment, isEnum, isNull, isRelation, isTable, sanitizePropertyName, singularize, snakeCaseToPascalCase } from "./helpers";
+import { singular } from "pluralize";
+import { getLineColumns, getRelationInformation, getTableName, isComment, isEnum, isNull, isRelation, isTable, sanitizePropertyName, snakeCaseToPascalCase } from "./helpers";
 import { Interface, Property } from "./types";
 
 const DBML_TO_TS_MAP: Record<string, string> = {
@@ -9,6 +10,7 @@ const DBML_TO_TS_MAP: Record<string, string> = {
   "text": "string",
   "uuid": "string",
   "int": "number",
+  "timestamptz": "Date",
   "datetime": "Date",
   "date": "Date"
 };
@@ -105,7 +107,7 @@ export async function generate(schemaFilePath: string): Promise<string> {
 
     if (propertyMetadata && isRelation(propertyMetadata)) {
       const relationInformation = getRelationInformation(propertyMetadata)
-      const relationTableName = snakeCaseToPascalCase(singularize(relationInformation.name));
+      const relationTableName = snakeCaseToPascalCase(singular(relationInformation.name));
 
       property.type = `${relationTableName}${ARRAY_RELATIONS.includes(relationInformation.symbol) ? "[]" : ""}`;
     }
@@ -123,7 +125,7 @@ export async function generate(schemaFilePath: string): Promise<string> {
 
   for (const [key, value] of interfaceMap.entries()) {
     const interfaceObject: Interface = {
-      name: singularize(key),
+      name: singular(key),
       properties: [...value],
       isInterface: true
     };
