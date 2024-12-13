@@ -35,13 +35,6 @@ export function isRelation(line: string): boolean {
   return line.includes("ref:");
 }
 
-export function sanitizePropertyName(propertyName: string): string {
-  if (propertyName.endsWith("_id"))
-    propertyName = propertyName.replace("_id", "");
-
-  return snakeCaseToCamelCase(singular(propertyName));
-}
-
 /**
  * This function returns three columns of each
  * DBML line

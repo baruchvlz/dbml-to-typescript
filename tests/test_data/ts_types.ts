@@ -12,8 +12,8 @@ interface TestTableOne {
   testBooleanProperty: boolean;
   testNullProperty?: string;
   testRelationSingle: TestTableTwo;
-  testRelationArray: TestTableThree[];
-  testRelationMany: TestTableFour[];
+  testRelationArrays: TestTableThree[];
+  testRelationManyIds: TestTableFour[];
   created: Date;
 }
 
@@ -25,7 +25,7 @@ interface TestTableTwo {
   testSingularizationBusiness: TestTableThree;
   testSingularizationCompany: TestTableThree;
   testSingularizationOffice: TestTableFour;
-  testSingularizationCar: TestTableOne;
+  testSingularizationCars: TestTableOne[];
   created: Date;
 }
 
@@ -42,7 +42,7 @@ interface TestTableFour {
   id: number;
   foo: number;
   bar?: boolean;
-  testTableOne: TestTableOne[];
+  testTableOnes: TestTableOne[];
   created: Date;
 }
 

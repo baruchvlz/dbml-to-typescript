@@ -6,8 +6,8 @@ Table test_table_one {
   test_null_property text [null]
 
   test_relation_single int [ref: - test_table_two.id]
-  test_relation_array int [ref: < test_table_three.id]
-  test_relation_many_id int [ref: <> test_table_four.id]
+  test_relation_arrays int [ref: < test_table_three.id]
+  test_relation_many_ids int [ref: <> test_table_four.id]
   created datetime
 }
 
@@ -20,7 +20,7 @@ Table test_table_two {
   test_singularization_businesses int [ref: - test_table_three.id]
   test_singularization_companies int [ref: - test_table_three.id]
   test_singularization_offices int [ref: - test_table_four.id]
-  test_singularization_cars int [ref: - test_table_one.id]
+  test_singularization_cars int [ref: < test_table_one.id]
 
   created datetime
 }
@@ -42,7 +42,7 @@ Table test_table_four {
   foo int
   bar boolean [null]
 
-  testTableOne int [ref: <> test_table_one.id]
+  test_table_ones int [ref: <> test_table_one.id]
 
   created datetime
 }

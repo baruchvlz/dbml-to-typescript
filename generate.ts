@@ -1,20 +1,26 @@
 import { createReadStream } from "fs";
 import { render } from "mustache";
 import { createInterface as readlineCrate } from "readline";
-import { singular } from "pluralize";
-import { getLineColumns, getRelationInformation, getTableName, isComment, isEnum, isNull, isRelation, isTable, sanitizePropertyName, snakeCaseToPascalCase } from "./helpers";
+import { plural, singular } from "pluralize";
+import {
+  getLineColumns,
+  getRelationInformation,
+  getTableName,
+  isComment,
+  isEnum,
+  isNull,
+  isRelation,
+  isTable,
+  snakeCaseToCamelCase,
+  snakeCaseToPascalCase
+} from "./helpers";
 import { Interface, Property } from "./types";
 
-const DBML_TO_TS_MAP: Record<string, string> = {
-  "varchar": "string",
-  "text": "string",
-  "uuid": "string",
-  "int": "number",
-  "timestamptz": "Date",
-  "datetime": "Date",
-  "date": "Date"
+const DBML_TO_TS_MAP: Record<string, string[]> = {
+  string: ["varchar", "text", "uuid"],
+  number: ["int"],
+  Date: ["timestamp", "date"]
 };
-const ARRAY_RELATIONS = ["<", "<>"];
 
 const TS_TEMPLATE = `{{#interfaces}}
 // {{name}}
@@ -99,8 +105,9 @@ export async function generate(schemaFilePath: string): Promise<string> {
       propertyMetadata,
     } = getLineColumns(line.trim());
 
+    const isArray = propertyMetadata?.includes("<>") || propertyMetadata?.includes("<");
     const property: Property = {
-      name: sanitizePropertyName(propertyName),
+      name: snakeCaseToCamelCase(isArray ? plural(propertyName) : singular(propertyName)),
       type: propertyType,
       null: isNull(line)
     };
@@ -109,13 +116,15 @@ export async function generate(schemaFilePath: string): Promise<string> {
       const relationInformation = getRelationInformation(propertyMetadata)
       const relationTableName = snakeCaseToPascalCase(singular(relationInformation.name));
 
-      property.type = `${relationTableName}${ARRAY_RELATIONS.includes(relationInformation.symbol) ? "[]" : ""}`;
+      property.type = `${relationTableName}${isArray ? "[]" : ""}`;
     }
 
-    const dbmlToTsMapKey = Object.keys(DBML_TO_TS_MAP).find(key => property.type!.includes(key));
-
-    if (dbmlToTsMapKey)
-      property.type = DBML_TO_TS_MAP[dbmlToTsMapKey];
+    // verify type mapping
+    for (const [key, value] of Object.entries(DBML_TO_TS_MAP)) {
+      if (value.find(val => property.type!.includes(val))) {
+        property.type = key;
+      }
+    }
 
     interfaceMap.set(
       currentTable!,
@@ -123,10 +132,11 @@ export async function generate(schemaFilePath: string): Promise<string> {
     );
   }
 
-  for (const [key, value] of interfaceMap.entries()) {
+  // build data object for mustache
+  for (const [name, properties] of interfaceMap.entries()) {
     const interfaceObject: Interface = {
-      name: singular(key),
-      properties: [...value],
+      name: singular(name),
+      properties: [...properties],
       isInterface: true
     };
 
