@@ -112,12 +112,12 @@ export async function generate(schemaFilePath: string): Promise<string> {
       const relationTableName = snakeCaseToPascalCase(singular(relationInformation.name));
 
       property.type = `${relationTableName}${isArray ? "[]" : ""}`;
-    }
-
-    // verify type mapping
-    for (const [key, value] of Object.entries(DBML_TO_TS_MAP)) {
-      if (value.find(val => property.type!.includes(val))) {
-        property.type = key;
+    } else {
+      // verify type mapping
+      for (const [key, value] of Object.entries(DBML_TO_TS_MAP)) {
+        if (value.find(val => property.type!.includes(val))) {
+          property.type = key;
+        }
       }
     }
 
