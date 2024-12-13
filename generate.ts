@@ -27,12 +27,7 @@ const TS_TEMPLATE = `{{#interfaces}}
 {{#isInterface}}
 interface {{name}} {
 {{#properties}}
-{{#null}}
-  {{name}}?: {{type}};
-{{/null}}
-{{^null}}
-  {{name}}: {{type}};
-{{/null}}
+  {{name}}{{#null}}?{{/null}}: {{type}};
 {{/properties}}
 }
 {{/isInterface}}
